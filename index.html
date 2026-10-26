@@ -1,290 +1,342 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>For My Lovie</title>
-    <style>
-        /* Base Reset */
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            -webkit-tap-highlight-color: transparent;
-        }
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>For My Lovie</title>
+  <style>
+    :root {
+      --pink-1: #ffe5ec;
+      --pink-2: #ffc2d1;
+      --pink-3: #f7aef8;
+      --pink-4: #b3e5fc;
+      --rose: #d81b60;
+      --text: #444444;
+      --shadow: rgba(216, 27, 96, 0.15);
+    }
 
-        /* Smooth animated gradient background */
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-            background: linear-gradient(135deg, #ffe5ec, #ffc2d1, #f7aef8, #b3e5fc);
-            background-size: 400% 400%;
-            animation: gradientAnimation 15s ease infinite;
-            min-height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            padding: 15px;
-            overflow: hidden;
-            perspective: 1000px;
-        }
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      -webkit-tap-highlight-color: transparent;
+    }
 
-        @keyframes gradientAnimation {
-            0% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-            100% { background-position: 0% 50%; }
-        }
+    html, body {
+      width: 100%;
+      height: 100%;
+    }
 
-        /* Container to keep everything centered and responsive */
-        .stage {
-            position: relative;
-            width: 100%;
-            max-width: 340px;
-            height: 450px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background: linear-gradient(135deg, var(--pink-1), var(--pink-2), var(--pink-3), var(--pink-4));
+      background-size: 400% 400%;
+      animation: gradientAnimation 15s ease infinite;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 15px;
+      overflow: hidden;
+      perspective: 1000px;
+    }
 
-        /* Envelope Wrapper */
-        .envelope-wrapper {
-            position: absolute;
-            width: 100%;
-            height: 210px;
-            background-color: #ffb3c1;
-            border-bottom-left-radius: 12px;
-            border-bottom-right-radius: 12px;
-            box-shadow: 0 15px 35px rgba(216, 27, 96, 0.15);
-            cursor: pointer;
-            transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
-            z-index: 2;
-        }
+    @keyframes gradientAnimation {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
 
-        /* Envelope Top Flap */
-        .envelope-wrapper::before {
-            content: "";
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 0;
-            height: 0;
-            border-left: 170px solid transparent;
-            border-right: 170px solid transparent;
-            border-top: 120px solid #ff8093;
-            transform-origin: top;
-            transition: transform 0.5s ease 0.4s, z-index 0s linear 0.4s;
-            z-index: 4;
-        }
+    .stage {
+      position: relative;
+      width: min(90vw, 340px);
+      height: 450px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
 
-        /* Inside/Side Flaps of Envelope */
-        .envelope-wrapper::after {
-            content: "";
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            width: 0;
-            height: 0;
-            border-left: 170px solid #ff99aa;
-            border-right: 170px solid #ff99aa;
-            border-bottom: 105px solid #ff99aa;
-            border-top: 105px solid transparent;
-            border-radius: 0 0 12px 12px;
-            z-index: 3;
-        }
+    .envelope-wrapper {
+      position: absolute;
+      width: 100%;
+      height: 210px;
+      background: linear-gradient(180deg, #ffb9c7 0%, #ff9fb0 100%);
+      border-bottom-left-radius: 12px;
+      border-bottom-right-radius: 12px;
+      box-shadow: 0 15px 35px var(--shadow);
+      cursor: pointer;
+      transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+      z-index: 2;
+      transform-origin: center top;
+      overflow: visible;
+      user-select: none;
+    }
 
-        /* The Heart Sticker / Open Button */
-        .heart-sticker {
-            position: absolute;
-            top: 105px;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            font-size: 2.8rem;
-            z-index: 5;
-            transition: transform 0.3s ease, opacity 0.4s ease 0.6s;
-            animation: pulse 2s infinite;
-        }
+    .envelope-wrapper::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 0;
+      height: 0;
+      border-left: 170px solid transparent;
+      border-right: 170px solid transparent;
+      border-top: 120px solid #ff8093;
+      transform-origin: top center;
+      transition: transform 0.5s ease 0.4s, z-index 0.2s ease 0.4s;
+      z-index: 4;
+      will-change: transform;
+    }
 
-        @keyframes pulse {
-            0% { transform: translate(-50%, -50%) scale(1); }
-            50% { transform: translate(-50%, -50%) scale(1.12); }
-            100% { transform: translate(-50%, -50%) scale(1); }
-        }
+    .envelope-wrapper::after {
+      content: "";
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 0;
+      height: 0;
+      border-left: 170px solid #ff99aa;
+      border-right: 170px solid #ff99aa;
+      border-bottom: 105px solid #ff99aa;
+      border-top: 105px solid transparent;
+      border-radius: 0 0 12px 12px;
+      z-index: 3;
+    }
 
-        .hint-text {
-            position: absolute;
-            bottom: -45px;
-            width: 100%;
-            text-align: center;
-            color: #d81b60;
-            font-weight: 700;
-            font-size: 0.85rem;
-            letter-spacing: 1.5px;
-            transition: opacity 0.4s ease;
-        }
+    .heart-sticker {
+      position: absolute;
+      top: 105px;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      font-size: 2.8rem;
+      z-index: 5;
+      transition: transform 0.3s ease, opacity 0.4s ease 0.6s;
+      animation: pulse 2s infinite;
+      user-select: none;
+    }
 
-        /* The Letter inside the envelope */
-        .letter-container {
-            position: absolute;
-            bottom: 5px;
-            left: 8px;
-            right: 8px;
-            background: rgba(255, 255, 255, 0.98);
-            padding: 25px 20px;
-            border-radius: 16px;
-            box-shadow: 0 -5px 15px rgba(0,0,0,0.03);
-            z-index: 1;
-            transition: transform 0.8s cubic-bezier(0.34, 1.56, 0.64, 1) 0.6s, opacity 0.4s ease 0.6s;
-            max-height: 190px;
-            opacity: 0;
-            overflow-y: auto;
-            -webkit-overflow-scrolling: touch;
-        }
+    @keyframes pulse {
+      0%, 100% { transform: translate(-50%, -50%) scale(1); }
+      50% { transform: translate(-50%, -50%) scale(1.12); }
+    }
 
-        /* Typography */
-        h1 {
-            font-size: 1.3rem;
-            color: #d81b60;
-            margin-bottom: 12px;
-            font-weight: 700;
-        }
+    .hint-text {
+      position: absolute;
+      bottom: -42px;
+      width: 100%;
+      text-align: center;
+      color: var(--rose);
+      font-weight: 700;
+      font-size: 0.85rem;
+      letter-spacing: 1.5px;
+      transition: opacity 0.4s ease;
+    }
 
-        p {
-            font-size: 0.95rem;
-            color: #444444;
-            line-height: 1.6;
-            margin-bottom: 16px;
-        }
+    .letter-container {
+      position: absolute;
+      bottom: 5px;
+      left: 8px;
+      right: 8px;
+      background: rgba(255, 255, 255, 0.98);
+      padding: 25px 20px;
+      border-radius: 16px;
+      box-shadow: 0 -5px 15px rgba(0,0,0,0.03);
+      z-index: 1;
+      transition: transform 0.8s cubic-bezier(0.34, 1.56, 0.64, 1) 0.45s, opacity 0.4s ease 0.4s;
+      max-height: 190px;
+      opacity: 0;
+      overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
+    }
 
-        .closing {
-            margin-bottom: 0;
-            font-weight: 700;
-            color: #d81b60;
-        }
+    h1 {
+      font-size: 1.3rem;
+      color: var(--rose);
+      margin-bottom: 12px;
+      font-weight: 700;
+    }
 
-        /* Opened State Styles */
-        .envelope-wrapper.open {
-            transform: translateY(110px);
-            cursor: default;
-        }
+    p {
+      font-size: 0.95rem;
+      color: var(--text);
+      line-height: 1.6;
+      margin-bottom: 16px;
+    }
 
-        .envelope-wrapper.open::before {
-            transform: rotateX(180px);
-            z-index: 0;
-        }
+    .closing {
+      margin-bottom: 0;
+      font-weight: 700;
+      color: var(--rose);
+    }
 
-        .envelope-wrapper.open .heart-sticker {
-            opacity: 0;
-            pointer-events: none;
-        }
+    .envelope-wrapper.open {
+      transform: translateY(110px);
+      cursor: default;
+    }
 
-        .envelope-wrapper.open .hint-text {
-            opacity: 0;
-        }
+    .envelope-wrapper.open::before {
+      transform: rotateX(180deg);
+      z-index: 0;
+    }
 
-        .envelope-wrapper.open .letter-container {
-            opacity: 1;
-            transform: translateY(-135px);
-            max-height: 380px;
-            z-index: 6;
-            box-shadow: 0 10px 30px rgba(216, 27, 96, 0.2);
-        }
+    .envelope-wrapper.open .heart-sticker {
+      opacity: 0;
+      pointer-events: none;
+    }
 
-        /* Floating Hearts Layer */
-        .hearts-container {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100vw;
-            height: 100vh;
-            pointer-events: none;
-            z-index: 1;
-        }
+    .envelope-wrapper.open .hint-text {
+      opacity: 0;
+    }
 
-        .floating-heart {
-            position: absolute;
-            bottom: -50px;
-            font-size: 1.5rem;
-            opacity: 0;
-            animation: floatUp 4s linear forwards;
-        }
+    .envelope-wrapper.open .letter-container {
+      opacity: 1;
+      transform: translateY(-135px);
+      max-height: 380px;
+      z-index: 6;
+      box-shadow: 0 10px 30px rgba(216, 27, 96, 0.2);
+    }
 
-        @keyframes floatUp {
-            0% {
-                transform: translateY(0) translateX(0) rotate(0deg);
-                opacity: 1;
-            }
-            100% {
-                transform: translateY(-105vh) translateX(var(--random-x)) rotate(var(--random-rotate));
-                opacity: 0;
-            }
-        }
-    </style>
+    .hearts-container {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      overflow: hidden;
+      z-index: 1;
+    }
+
+    .floating-heart {
+      position: absolute;
+      bottom: -50px;
+      font-size: 1.5rem;
+      opacity: 0;
+      animation: floatUp 4s linear forwards;
+    }
+
+    @keyframes floatUp {
+      0% {
+        transform: translateY(0) translateX(0) rotate(0deg);
+        opacity: 1;
+      }
+      100% {
+        transform: translateY(-105vh) translateX(var(--random-x)) rotate(var(--random-rotate));
+        opacity: 0;
+      }
+    }
+
+    @media (max-width: 420px) {
+      .stage {
+        height: 420px;
+      }
+
+      .envelope-wrapper {
+        height: 200px;
+      }
+
+      .letter-container {
+        padding: 20px 16px;
+      }
+
+      h1 {
+        font-size: 1.15rem;
+      }
+
+      p {
+        font-size: 0.9rem;
+      }
+    }
+  </style>
 </head>
 <body>
 
-    <div class="stage">
-        <div class="envelope-wrapper" onclick="openEnvelope()">
-            <div class="heart-sticker">❤️</div>
-            <div class="hint-text">TAP TO OPEN</div>
-            
-            <div class="letter-container" onclick="event.stopPropagation();">
-                <h1>Hi lovie,</h1>
-                
-                <p>I want to deeply apologize for how I have treated you over the last few months. I am so sorry for not cherishing you and for not valuing you to the point where you finally had enough. I am truly, deeply sorry, and I mean every single word.</p>
-                
-                <p>Please don't change who you are. I am trying my absolute best to give you the love and appreciation you deserve. To be honest, right now, I just feel a bit lost and don't quite know where to start. But day by day, I am working hard to find myself again. I want to heal so that your compliments and care are no longer blocked by my emotional guard or what feels like a cold heart.</p>
-                
-                <p>I know you are still hurt and disappointed, and an apology doesn't instantly fix that, but I truly hope you can accept it. I promise you that day by day, I am going to focus on finding myself and healing, so that loving you the way you deserve becomes easier.</p>
-                
-                <p class="closing">I love you, and I am so sorry.</p>
-            </div>
-        </div>
+  <div class="stage">
+    <div
+      class="envelope-wrapper"
+      id="envelope"
+      tabindex="0"
+      role="button"
+      aria-label="Open love letter"
+    >
+      <div class="heart-sticker" aria-hidden="true">❤️</div>
+      <div class="hint-text">TAP TO OPEN</div>
+
+      <div class="letter-container" onclick="event.stopPropagation();">
+        <h1>Hi lovie,</h1>
+
+        <p>
+          I want to deeply apologize for how I have treated you over the last few months.
+          I am so sorry for not cherishing you and for not valuing you to the point where
+          you finally had enough.
+        </p>
+
+        <p>
+          Please don't change who you are. I am trying my absolute best to give you the
+          love and appreciation you deserve. To be honest, right now, I just feel a bit
+          lost and don't quite know how to fix the hurt I caused.
+        </p>
+
+        <p>
+          I know you are still hurt and disappointed, and an apology doesn't instantly fix
+          that, but I truly hope you can accept it. I promise you that day by day, I am going
+          to focus on becoming someone more patient, more caring, and more worthy of your trust.
+        </p>
+
+        <p class="closing">I love you, and I am so sorry.</p>
+      </div>
     </div>
+  </div>
 
-    <div class="hearts-container" id="heartsContainer"></div>
+  <div class="hearts-container" id="heartsContainer" aria-hidden="true"></div>
 
-    <script>
-        let opened = false;
+  <audio id="bgMusic" loop preload="auto">
+    <source src="your-audio-file.mp3" type="audio/mpeg" />
+  </audio>
 
-        function openEnvelope() {
-            if (opened) return;
-            opened = true;
-            
-            document.querySelector('.envelope-wrapper').classList.add('open');
-            
-            // Start generating floating hearts continuously
-            setInterval(createHeart, 300);
-        }
+  <script>
+    const envelope = document.getElementById("envelope");
+    const heartsContainer = document.getElementById("heartsContainer");
+    const audio = document.getElementById("bgMusic");
+    let opened = false;
 
-        function createHeart() {
-            const container = document.getElementById('heartsContainer');
-            const heart = document.createElement('div');
-            heart.classList.add('floating-heart');
-            
-            // Randomize heart types
-            const heartTypes = ['❤️', '💖', '💝', '💕', '🌸'];
-            heart.innerText = heartTypes[Math.floor(Math.random() * heartTypes.length)];
-            
-            // Randomize screen positioning and sizes
-            heart.style.left = Math.random() * 100 + 'vw';
-            heart.style.fontSize = (Math.random() * 1.2 + 0.8) + 'rem';
-            
-            // Pass values to CSS variables for unique animation paths
-            const randomX = (Math.random() * 100 - 50) + 'px';
-            const randomRotate = (Math.random() * 360) + 'deg';
-            heart.style.setProperty('--random-x', randomX);
-            heart.style.setProperty('--random-rotate', randomRotate);
-            
-            // Speed up or slow down individual hearts slightly
-            heart.style.animationDuration = (Math.random() * 2 + 3) + 's';
-            
-            container.appendChild(heart);
-            
-            // Clean up elements from DOM after animation completes
-            setTimeout(() => {
-                heart.remove();
-            }, 5000);
-        }
-    </script>
+    function createHeart() {
+      const heart = document.createElement("div");
+      heart.classList.add("floating-heart");
+
+      const heartTypes = ["❤️", "💖", "💝", "💕", "🌸"];
+      heart.innerText = heartTypes[Math.floor(Math.random() * heartTypes.length)];
+
+      heart.style.left = Math.random() * 100 + "vw";
+      heart.style.fontSize = (Math.random() * 1.2 + 0.8).toFixed(2) + "rem";
+      heart.style.setProperty("--random-x", (Math.random() * 100 - 50) + "px");
+      heart.style.setProperty("--random-rotate", (Math.random() * 360) + "deg");
+      heart.style.animationDuration = (Math.random() * 2 + 3).toFixed(2) + "s";
+
+      heartsContainer.appendChild(heart);
+
+      setTimeout(() => heart.remove(), 5000);
+    }
+
+    function openEnvelope() {
+      if (opened) return;
+      opened = true;
+      envelope.classList.add("open");
+
+      if (audio) {
+        audio.play().catch(() => {});
+      }
+
+      const heartInterval = setInterval(createHeart, 300);
+      setTimeout(() => clearInterval(heartInterval), 5000);
+    }
+
+    envelope.addEventListener("click", openEnvelope);
+
+    envelope.addEventListener("keydown", (event) => {
+      if (event.key === "Enter" || event.key === " ") {
+        event.preventDefault();
+        openEnvelope();
+      }
+    });
+  </script>
 
 </body>
 </html>
