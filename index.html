@@ -14,6 +14,7 @@
       --rose: #d81b60;
       --text: #444444;
       --shadow: rgba(216, 27, 96, 0.15);
+      --panel: rgba(255, 255, 255, 0.96);
     }
 
     * {
@@ -50,6 +51,18 @@
       100% { background-position: 0% 50%; }
     }
 
+    .sr-only {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      white-space: nowrap;
+      border: 0;
+    }
+
     .stage {
       position: relative;
       width: min(90vw, 340px);
@@ -61,10 +74,11 @@
     }
 
     .envelope-wrapper {
-      position: absolute;
+      position: relative;
       width: 100%;
       height: 210px;
       background: linear-gradient(180deg, #ffb9c7 0%, #ff9fb0 100%);
+      border: 0;
       border-bottom-left-radius: 12px;
       border-bottom-right-radius: 12px;
       box-shadow: 0 15px 35px var(--shadow);
@@ -77,6 +91,17 @@
       will-change: transform;
       -webkit-tap-highlight-color: transparent;
       touch-action: manipulation;
+      appearance: none;
+      -webkit-appearance: none;
+      color: inherit;
+      padding: 0;
+      text-align: inherit;
+    }
+
+    .envelope-wrapper:focus-visible {
+      outline: 3px solid rgba(216, 27, 96, 0.8);
+      outline-offset: 6px;
+      box-shadow: 0 0 0 6px rgba(216, 27, 96, 0.18), 0 15px 35px var(--shadow);
     }
 
     .envelope-wrapper::before {
@@ -146,12 +171,12 @@
       bottom: 5px;
       left: 8px;
       right: 8px;
-      background: rgba(255, 255, 255, 0.98);
+      background: var(--panel);
       padding: 25px 20px 20px;
       border-radius: 16px;
       box-shadow: 0 -5px 15px rgba(0,0,0,0.03);
       z-index: 1;
-      transition: transform 0.8s cubic-bezier(0.34, 1.56, 0.64, 1) 0.45s, opacity 0.4s ease 0.4s;
+      transition: transform 0.8s cubic-bezier(0.34, 1.56, 0.64, 1) 0.45s, opacity 0.4s ease 0.4s, max-height 0.4s ease 0.45s;
       max-height: 190px;
       opacity: 0;
       overflow-y: auto;
@@ -216,6 +241,10 @@
       visibility: hidden;
       pointer-events: none;
       transition: opacity 0.35s ease, visibility 0.35s ease, transform 0.35s ease;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
     }
 
     body.audio-ready .audio-controls {
@@ -239,7 +268,15 @@
       letter-spacing: 0.02em;
       box-shadow: 0 8px 22px rgba(216, 27, 96, 0.28);
       cursor: pointer;
-      transition: transform 0.2s ease, box-shadow 0.2s ease, filter 0.2s ease;
+      transition: transform 0.2s ease, box-shadow 0.2s ease, filter 0.2s ease, opacity 0.2s ease;
+      -webkit-appearance: none;
+      appearance: none;
+    }
+
+    .audio-button:disabled {
+      cursor: not-allowed;
+      opacity: 0.75;
+      filter: grayscale(0.2);
     }
 
     body.audio-ready .audio-button {
@@ -285,6 +322,27 @@
     .audio-icon {
       font-size: 1.1rem;
       line-height: 1;
+    }
+
+    .audio-status {
+      min-height: 1.1em;
+      font-size: 0.72rem;
+      font-weight: 600;
+      color: rgba(68, 68, 68, 0.9);
+      letter-spacing: 0.04em;
+      text-align: center;
+      opacity: 0;
+      transform: translateY(2px);
+      transition: opacity 0.25s ease, transform 0.25s ease;
+    }
+
+    body.audio-ready .audio-status.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .audio-status.error {
+      color: #9b1c42;
     }
 
     .hearts-container {
@@ -350,23 +408,29 @@
         transition-duration: 0.01ms !important;
         scroll-behavior: auto !important;
       }
+
+      .floating-heart {
+        animation: none;
+        opacity: 0;
+      }
     }
   </style>
 </head>
 <body>
-
   <div class="stage">
-    <div
+    <button
       class="envelope-wrapper"
       id="envelope"
-      tabindex="0"
-      role="button"
+      type="button"
       aria-label="Open love letter"
+      aria-expanded="false"
+      aria-controls="letterContent"
     >
+      <span class="sr-only">Open my apology letter</span>
       <div class="heart-sticker" aria-hidden="true">❤️</div>
-      <div class="hint-text">TAP TO OPEN</div>
+      <div class="hint-text" aria-live="polite">TAP TO OPEN</div>
 
-      <div class="letter-container" onclick="event.stopPropagation();">
+      <div class="letter-container" id="letterContent" aria-live="polite" onclick="event.stopPropagation();">
         <h1>Hi lovie,</h1>
 
         <p>
@@ -389,7 +453,7 @@
 
         <p class="closing">I love you, and I am so sorry.</p>
       </div>
-    </div>
+    </button>
   </div>
 
   <div class="hearts-container" id="heartsContainer" aria-hidden="true"></div>
@@ -399,6 +463,7 @@
       <span class="audio-icon" aria-hidden="true">💖</span>
       <span class="audio-label">Play Audio</span>
     </button>
+    <div id="audioStatus" class="audio-status" aria-live="polite"></div>
   </div>
 
   <audio id="bgMusic" loop preload="auto" playsinline crossorigin="anonymous">
@@ -410,8 +475,29 @@
     const heartsContainer = document.getElementById("heartsContainer");
     const audio = document.getElementById("bgMusic");
     const audioButton = document.getElementById("audioButton");
+    const audioStatus = document.getElementById("audioStatus");
+    const hintText = document.querySelector(".hint-text");
+    const MAX_HEARTS = 24;
     let opened = false;
     let heartInterval = null;
+
+    function setHintText() {
+      if (!hintText) return;
+      hintText.textContent = opened ? "TAP TO CLOSE" : "TAP TO OPEN";
+    }
+
+    function setAudioStatus(message, isError = false) {
+      if (!audioStatus) return;
+      audioStatus.textContent = message || "";
+      audioStatus.classList.toggle("error", isError);
+      audioStatus.classList.toggle("visible", Boolean(message));
+    }
+
+    function setEnvelopeState() {
+      envelope.setAttribute("aria-expanded", String(opened));
+      envelope.classList.toggle("open", opened);
+      setHintText();
+    }
 
     function createHeart() {
       const heart = document.createElement("div");
@@ -445,16 +531,19 @@
     function safePlayAudio() {
       if (!audio) return;
 
-      audio.muted = false;
-      audio.currentTime = 0;
-
       const playPromise = audio.play();
       if (playPromise && typeof playPromise.catch === "function") {
-        playPromise.catch(() => {
-          audio.muted = true;
-          audio.pause();
-          updateAudioButtonState();
-        });
+        playPromise
+          .then(() => {
+            audio.muted = false;
+            setAudioStatus("Music on ✨");
+          })
+          .catch(() => {
+            audio.muted = true;
+            audio.pause();
+            audioButton.disabled = true;
+            setAudioStatus("Audio unavailable on this device", true);
+          });
       }
 
       updateAudioButtonState();
@@ -471,6 +560,7 @@
         safePlayAudio();
       } else {
         audio.pause();
+        setAudioStatus("");
       }
 
       updateAudioButtonState();
@@ -479,8 +569,14 @@
     function startHeartBurst() {
       if (heartInterval) return;
 
-      createHeart();
-      heartInterval = setInterval(createHeart, 300);
+      const burst = () => {
+        if (heartsContainer.children.length < MAX_HEARTS) {
+          createHeart();
+        }
+      };
+
+      burst();
+      heartInterval = setInterval(burst, 300);
       setTimeout(() => {
         clearInterval(heartInterval);
         heartInterval = null;
@@ -490,27 +586,39 @@
     function openEnvelope() {
       if (opened) return;
       opened = true;
-      envelope.classList.add("open");
+      setEnvelopeState();
       document.body.classList.add("audio-ready");
-
       safePlayAudio();
       startHeartBurst();
     }
 
-    envelope.addEventListener("pointerdown", (event) => {
-      if (event.pointerType === "mouse" && event.button !== 0) return;
-      openEnvelope();
-    });
+    function closeEnvelope() {
+      if (!opened) return;
+      opened = false;
+      setEnvelopeState();
+      if (audio && !audio.paused) {
+        audio.pause();
+      }
+      updateAudioButtonState();
+    }
 
     envelope.addEventListener("click", (event) => {
       if (event.target.closest(".letter-container")) return;
-      openEnvelope();
+      if (opened) {
+        closeEnvelope();
+      } else {
+        openEnvelope();
+      }
     });
 
     envelope.addEventListener("keydown", (event) => {
       if (event.key === "Enter" || event.key === " ") {
         event.preventDefault();
-        openEnvelope();
+        if (opened) {
+          closeEnvelope();
+        } else {
+          openEnvelope();
+        }
       }
     });
 
@@ -522,18 +630,32 @@
     }
 
     if (audio) {
-      audio.addEventListener("play", updateAudioButtonState);
-      audio.addEventListener("pause", updateAudioButtonState);
-      audio.addEventListener("ended", updateAudioButtonState);
+      audio.addEventListener("play", () => {
+        setAudioStatus("Music on ✨");
+        updateAudioButtonState();
+      });
+
+      audio.addEventListener("pause", () => {
+        setAudioStatus("");
+        updateAudioButtonState();
+      });
+
+      audio.addEventListener("ended", () => {
+        setAudioStatus("Replay when you're ready 💞");
+        updateAudioButtonState();
+      });
+
       audio.addEventListener("error", () => {
+        audioButton.disabled = true;
         audio.removeAttribute("src");
         audio.load();
+        setAudioStatus("Audio unavailable on this device", true);
         updateAudioButtonState();
       }, { once: true });
     }
 
+    setEnvelopeState();
     updateAudioButtonState();
   </script>
-
 </body>
 </html>
