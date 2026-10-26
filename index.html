@@ -210,18 +210,19 @@
       position: fixed;
       left: 50%;
       bottom: 24px;
-      transform: translateX(-50%);
+      transform: translateX(-50%) translateY(14px);
       z-index: 20;
       opacity: 0;
       visibility: hidden;
       pointer-events: none;
-      transition: opacity 0.25s ease, visibility 0.25s ease, transform 0.25s ease;
+      transition: opacity 0.35s ease, visibility 0.35s ease, transform 0.35s ease;
     }
 
     body.audio-ready .audio-controls {
       opacity: 1;
       visibility: visible;
       pointer-events: auto;
+      transform: translateX(-50%) translateY(0);
     }
 
     .audio-button {
@@ -241,6 +242,34 @@
       transition: transform 0.2s ease, box-shadow 0.2s ease, filter 0.2s ease;
     }
 
+    body.audio-ready .audio-button {
+      animation: audioReveal 0.5s ease-out;
+    }
+
+    @keyframes audioReveal {
+      0% {
+        opacity: 0;
+        transform: translateY(10px) scale(0.9);
+      }
+      100% {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+      }
+    }
+
+    @keyframes audioPulse {
+      0%, 100% {
+        box-shadow: 0 8px 22px rgba(216, 27, 96, 0.28);
+      }
+      50% {
+        box-shadow: 0 10px 26px rgba(216, 27, 96, 0.42);
+      }
+    }
+
+    body.audio-ready .audio-button {
+      animation: audioReveal 0.5s ease-out, audioPulse 2.2s ease-in-out 0.5s infinite alternate;
+    }
+
     .audio-button:hover,
     .audio-button:focus-visible {
       transform: translateY(-1px) scale(1.01);
@@ -254,7 +283,8 @@
     }
 
     .audio-icon {
-      font-size: 1.05rem;
+      font-size: 1.1rem;
+      line-height: 1;
     }
 
     .hearts-container {
@@ -366,7 +396,7 @@
 
   <div class="audio-controls">
     <button id="audioButton" class="audio-button" type="button" aria-label="Play love song">
-      <span class="audio-icon" aria-hidden="true">🔊</span>
+      <span class="audio-icon" aria-hidden="true">💖</span>
       <span class="audio-label">Play Audio</span>
     </button>
   </div>
