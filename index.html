@@ -206,6 +206,47 @@
       box-shadow: 0 10px 30px rgba(216, 27, 96, 0.2);
     }
 
+    .audio-controls {
+      position: fixed;
+      left: 50%;
+      bottom: 24px;
+      transform: translateX(-50%);
+      z-index: 20;
+    }
+
+    .audio-button {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      border: none;
+      border-radius: 999px;
+      padding: 12px 18px;
+      background: linear-gradient(135deg, #ff8db1, #d81b60);
+      color: white;
+      font-size: 0.95rem;
+      font-weight: 700;
+      letter-spacing: 0.02em;
+      box-shadow: 0 8px 22px rgba(216, 27, 96, 0.28);
+      cursor: pointer;
+      transition: transform 0.2s ease, box-shadow 0.2s ease, filter 0.2s ease;
+    }
+
+    .audio-button:hover,
+    .audio-button:focus-visible {
+      transform: translateY(-1px) scale(1.01);
+      box-shadow: 0 10px 28px rgba(216, 27, 96, 0.34);
+      filter: saturate(1.08);
+      outline: none;
+    }
+
+    .audio-button.is-playing {
+      background: linear-gradient(135deg, #ffb3c8, #ea3e84);
+    }
+
+    .audio-icon {
+      font-size: 1.05rem;
+    }
+
     .hearts-container {
       position: fixed;
       inset: 0;
@@ -253,6 +294,11 @@
       }
 
       p {
+        font-size: 0.9rem;
+      }
+
+      .audio-button {
+        padding: 10px 16px;
         font-size: 0.9rem;
       }
     }
@@ -308,6 +354,13 @@
 
   <div class="hearts-container" id="heartsContainer" aria-hidden="true"></div>
 
+  <div class="audio-controls">
+    <button id="audioButton" class="audio-button" type="button" aria-label="Play love song">
+      <span class="audio-icon" aria-hidden="true">🔊</span>
+      <span class="audio-label">Play Audio</span>
+    </button>
+  </div>
+
   <audio id="bgMusic" loop preload="auto" playsinline crossorigin="anonymous">
     <source src="song.mp3" type="audio/mpeg" />
   </audio>
@@ -316,6 +369,7 @@
     const envelope = document.getElementById("envelope");
     const heartsContainer = document.getElementById("heartsContainer");
     const audio = document.getElementById("bgMusic");
+    const audioButton = document.getElementById("audioButton");
     let opened = false;
     let heartInterval = null;
 
@@ -336,6 +390,18 @@
       setTimeout(() => heart.remove(), 5000);
     }
 
+    function updateAudioButtonState() {
+      if (!audioButton) return;
+
+      const isPlaying = audio && !audio.paused && !audio.muted;
+      audioButton.classList.toggle("is-playing", isPlaying);
+      const label = audioButton.querySelector(".audio-label");
+      if (label) {
+        label.textContent = isPlaying ? "Pause Audio" : "Play Audio";
+      }
+      audioButton.setAttribute("aria-label", isPlaying ? "Pause love song" : "Play love song");
+    }
+
     function safePlayAudio() {
       if (!audio) return;
 
@@ -347,8 +413,27 @@
         playPromise.catch(() => {
           audio.muted = true;
           audio.pause();
+          updateAudioButtonState();
         });
       }
+
+      updateAudioButtonState();
+    }
+
+    function toggleAudio() {
+      if (!audio) return;
+
+      if (!opened) {
+        openEnvelope();
+      }
+
+      if (audio.paused) {
+        safePlayAudio();
+      } else {
+        audio.pause();
+      }
+
+      updateAudioButtonState();
     }
 
     function startHeartBurst() {
@@ -388,12 +473,25 @@
       }
     });
 
+    if (audioButton) {
+      audioButton.addEventListener("click", (event) => {
+        event.stopPropagation();
+        toggleAudio();
+      });
+    }
+
     if (audio) {
+      audio.addEventListener("play", updateAudioButtonState);
+      audio.addEventListener("pause", updateAudioButtonState);
+      audio.addEventListener("ended", updateAudioButtonState);
       audio.addEventListener("error", () => {
         audio.removeAttribute("src");
         audio.load();
+        updateAudioButtonState();
       }, { once: true });
     }
+
+    updateAudioButtonState();
   </script>
 
 </body>
