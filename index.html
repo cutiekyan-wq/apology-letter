@@ -212,6 +212,16 @@
       bottom: 24px;
       transform: translateX(-50%);
       z-index: 20;
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+      transition: opacity 0.25s ease, visibility 0.25s ease, transform 0.25s ease;
+    }
+
+    body.audio-ready .audio-controls {
+      opacity: 1;
+      visibility: visible;
+      pointer-events: auto;
     }
 
     .audio-button {
@@ -451,6 +461,7 @@
       if (opened) return;
       opened = true;
       envelope.classList.add("open");
+      document.body.classList.add("audio-ready");
 
       safePlayAudio();
       startHeartBurst();
